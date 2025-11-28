@@ -131,4 +131,4 @@ Acesse http://localhost:8081/registrar-sono/-5 para gerar um erro de negócio e 
 2.  Coloquei os códigos (`powershell` e `csharp`) dentro de caixinhas específicas (` ``` `).
 3.  Usei negrito (`**`) nos nomes e itens de lista para destacar.
 
-Copie o código acima e cole lá. Agora vai ficar perfeito!
+Obrigado por ler! 
