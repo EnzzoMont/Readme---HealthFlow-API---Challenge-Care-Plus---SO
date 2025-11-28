@@ -1,36 +1,38 @@
-🏥 HealthFlow API - Challenge Care Plus
-Este projeto consiste em uma API RESTful desenvolvida em .NET 9 e hospedada em infraestrutura On-Premise utilizando o servidor web IIS (Internet Information Services).
+# 🏥 HealthFlow API - Challenge Care Plus
 
-O objetivo principal desta entrega para a disciplina de Operating Systems é demonstrar a configuração de ambiente de servidor, deploy de aplicação, gerenciamento de permissões de sistema de arquivos e a implementação de uma estratégia de observabilidade em camadas (Logs de Infraestrutura vs. Logs de Aplicação).
+Este projeto consiste em uma API RESTful desenvolvida em **.NET 9** e hospedada em infraestrutura **On-Premise** utilizando o servidor web **IIS (Internet Information Services)**.
 
-👨‍💻 Integrantes do Grupo
-Enzo Barbeli - RM554272
+O objetivo principal desta entrega para a disciplina de **Operating Systems** é demonstrar a configuração de ambiente de servidor, deploy de aplicação, gerenciamento de permissões de sistema de arquivos e a implementação de uma estratégia de observabilidade em camadas (Logs de Infraestrutura vs. Logs de Aplicação).
 
-Enzzo Monteiro Barros Silva - RM552616
+---
 
-Felipe - RM 554249
+## 👨‍💻 Integrantes do Grupo
 
-Iago - RM 553776
+* **Enzo Barbeli** - RM554272
+* **Enzzo Monteiro Barros Silva** - RM552616
+* **Felipe** - RM 554249
+* **Iago** - RM 553776
+* **Lucas Garcia** - RM554070
+* **Pedro Chaves** - RM553988
 
-Lucas Garcia - RM554070
+---
 
-Pedro Chaves - RM553988
+## ⚙️ Pré-requisitos e Ambiente
 
-⚙️ Pré-requisitos e Ambiente
 Para reproduzir este ambiente, é necessário:
 
-Sistema Operacional: Windows 10, 11 ou Windows Server.
+1.  **Sistema Operacional:** Windows 10, 11 ou Windows Server.
+2.  **IIS (Internet Information Services):** Ativado no Windows.
+3.  **Runtime:** [.NET 9.0 Hosting Bundle](https://dotnet.microsoft.com/en-us/download/dotnet/thank-you/runtime-aspnetcore-9.0.0-windows-hosting-bundle-installer) (Essencial para o IIS processar aplicações .NET Core).
 
-IIS (Internet Information Services): Ativado no Windows.
+---
 
-Runtime: .NET 9.0 Hosting Bundle (Essencial para o IIS processar aplicações .NET Core).
+## 🚀 Passo a Passo da Configuração (Deploy)
 
-🚀 Passo a Passo da Configuração (Deploy)
-1. Instalação do IIS
+### 1. Instalação do IIS
 Executamos a ativação do servidor web nativo do Windows via PowerShell (Admin) ou Painel de Controle, garantindo a inclusão do Console de Gerenciamento.
 
-PowerShell
-
+```powershell
 Enable-WindowsOptionalFeature -Online -FeatureName IIS-WebServerRole -All
 2. Configuração do Código (Back-end)
 Utilizamos uma Minimal API em C# que simula o registro de atividades de saúde e valida regras de negócio (ex: horas de sono não podem ser negativas).
@@ -83,7 +85,7 @@ Porta: 8081 (Para evitar conflitos com a porta 80).
 Caminho Físico: C:\inetpub\wwwroot\HealthFlow.
 
 5. Configuração de Permissões (Segurança do SO)
-Para que a aplicação consiga escrever o Log de Negócio, foi necessário conceder permissão de escrita explicita na pasta de logs, já que o usuário do IIS é restrito por padrão.
+Para que a aplicação consiga escrever o Log de Negócio, foi necessário conceder permissão de escrita explícita na pasta de logs, já que o usuário do IIS é restrito por padrão.
 
 Criação da pasta: C:\HealthFlowLogs
 
@@ -122,3 +124,11 @@ Acesse http://localhost:8081 para verificar se a API está online.
 Acesse http://localhost:8081/registrar-sono/8 para um registro com sucesso (Status 200).
 
 Acesse http://localhost:8081/registrar-sono/-5 para gerar um erro de negócio e verificar a criação do arquivo de log em C:\HealthFlowLogs.
+
+
+### O que eu mudei para ficar bonito:
+1.  Adicionei espaços (linhas em branco) entre todos os tópicos.
+2.  Coloquei os códigos (`powershell` e `csharp`) dentro de caixinhas específicas (` ``` `).
+3.  Usei negrito (`**`) nos nomes e itens de lista para destacar.
+
+Copie o código acima e cole lá. Agora vai ficar perfeito!
