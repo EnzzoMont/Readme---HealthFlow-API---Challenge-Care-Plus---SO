@@ -1,0 +1,124 @@
+🏥 HealthFlow API - Challenge Care Plus
+Este projeto consiste em uma API RESTful desenvolvida em .NET 9 e hospedada em infraestrutura On-Premise utilizando o servidor web IIS (Internet Information Services).
+
+O objetivo principal desta entrega para a disciplina de Operating Systems é demonstrar a configuração de ambiente de servidor, deploy de aplicação, gerenciamento de permissões de sistema de arquivos e a implementação de uma estratégia de observabilidade em camadas (Logs de Infraestrutura vs. Logs de Aplicação).
+
+👨‍💻 Integrantes do Grupo
+Enzo Barbeli - RM554272
+
+Enzzo Monteiro Barros Silva - RM552616
+
+Felipe - RM 554249
+
+Iago - RM 553776
+
+Lucas Garcia - RM554070
+
+Pedro Chaves - RM553988
+
+⚙️ Pré-requisitos e Ambiente
+Para reproduzir este ambiente, é necessário:
+
+Sistema Operacional: Windows 10, 11 ou Windows Server.
+
+IIS (Internet Information Services): Ativado no Windows.
+
+Runtime: .NET 9.0 Hosting Bundle (Essencial para o IIS processar aplicações .NET Core).
+
+🚀 Passo a Passo da Configuração (Deploy)
+1. Instalação do IIS
+Executamos a ativação do servidor web nativo do Windows via PowerShell (Admin) ou Painel de Controle, garantindo a inclusão do Console de Gerenciamento.
+
+PowerShell
+
+Enable-WindowsOptionalFeature -Online -FeatureName IIS-WebServerRole -All
+2. Configuração do Código (Back-end)
+Utilizamos uma Minimal API em C# que simula o registro de atividades de saúde e valida regras de negócio (ex: horas de sono não podem ser negativas).
+
+Código Fonte (Program.cs):
+
+C#
+
+var builder = WebApplication.CreateBuilder(args);
+var app = builder.Build();
+
+// Caminho do Log de Regra de Negócio
+string logPath = @"C:\HealthFlowLogs\app_log.txt";
+
+app.MapGet("/", () => "HealthFlow API Online no IIS - Porta 8081");
+
+app.MapGet("/registrar-sono/{horas}", (int horas) =>
+{
+    // Validação de Regra de Negócio
+    if (horas < 0)
+    {
+        string logMsg = $"{DateTime.Now}: ERRO DE NEGÓCIO - Tentativa de registrar sono negativo: {horas}h.";
+        try { File.AppendAllText(logPath, logMsg + Environment.NewLine); }
+        catch { /* Ignora erro de disco para não travar request */ }
+        
+        return Results.BadRequest("Erro: Horas de sono não podem ser negativas.");
+    }
+
+    return Results.Ok($"Sucesso: {horas} horas de sono registradas.");
+});
+
+app.Run();
+3. Publicação (Build)
+Geramos os binários otimizados para produção e os alocamos no diretório padrão do IIS.
+
+PowerShell
+
+dotnet publish -o "C:\inetpub\wwwroot\HealthFlow"
+4. Configuração no IIS Manager
+Para garantir isolamento de processos e performance, configuramos:
+
+Application Pool: HealthFlowPool
+
+.NET CLR Version: No Managed Code (Essencial para .NET 5+).
+
+Site: HealthFlow
+
+Porta: 8081 (Para evitar conflitos com a porta 80).
+
+Caminho Físico: C:\inetpub\wwwroot\HealthFlow.
+
+5. Configuração de Permissões (Segurança do SO)
+Para que a aplicação consiga escrever o Log de Negócio, foi necessário conceder permissão de escrita explicita na pasta de logs, já que o usuário do IIS é restrito por padrão.
+
+Criação da pasta: C:\HealthFlowLogs
+
+Permissão: Full Control para o grupo Todos (ou IIS_IUSRS em ambiente produtivo).
+
+📊 Estratégia de Logs (Observabilidade)
+Demonstramos dois níveis distintos de monitoramento exigidos no desafio:
+
+1. Logs de Infraestrutura (IIS)
+Monitoram a saúde do servidor web e requisições HTTP.
+
+Localização: C:\inetpub\logs\LogFiles\W3SVC...
+
+O que registra: Erros de conexão, rotas inexistentes (404), Erros internos (500).
+
+Exemplo de Teste: Acessar http://localhost:8081/pagina-inexistente.
+
+Resultado no Log: GET /pagina-inexistente ... 404
+
+2. Logs de Aplicação (Regra de Negócio)
+Monitoram o comportamento do usuário e violações de regras lógicas.
+
+Localização: C:\HealthFlowLogs\app_log.txt
+
+O que registra: Tentativas de burlar regras de saúde (ex: sono negativo).
+
+Exemplo de Teste: Acessar http://localhost:8081/registrar-sono/-5.
+
+Resultado no Browser: 400 Bad Request.
+
+Resultado no Log (Txt): ERRO DE NEGÓCIO - Tentativa de registrar sono negativo.
+
+✅ Como Testar
+Acesse http://localhost:8081 para verificar se a API está online.
+
+Acesse http://localhost:8081/registrar-sono/8 para um registro com sucesso (Status 200).
+
+Acesse http://localhost:8081/registrar-sono/-5 para gerar um erro de negócio e verificar a criação do arquivo de log em C:\HealthFlowLogs.
